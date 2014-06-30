@@ -175,11 +175,11 @@ func (s *Sync) concurrentSyncS3ToDir(s3url S3Url, bucket *s3.Bucket, targetFiles
 
 			log.Infof("Starting sync: s3://%s/%s -> %s.", bucket.Name, file, filePath)
 			wg.Add(1)
-			go func(doneChan chan error, filePath string, bucket *s3.Bucket, file string) {
+			go func(doneChan chan error, filePath string, bucket *s3.Bucket, file string, wg *sync.WaitGroup) {
 				defer wg.Done()
 				getRoutine(doneChan, filePath, bucket, file)
 				pool <- 1
-			}(doneChan, filePath, bucket, file)
+			}(doneChan, filePath, bucket, file, &wg)
 		}
 	}
 
